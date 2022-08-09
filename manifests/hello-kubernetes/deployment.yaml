@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-kubernetes
+  labels:
+    app: hello-kubernetes
+    test: label
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-kubernetes
+      test: label
+  template:
+    metadata:
+      labels:
+        app: hello-kubernetes
+        test: label
+    spec:
+      containers:
+      - name: hello-kubernetes
+        image: paulbouwer/hello-kubernetes:1.8
+        ports:
+        - containerPort: 8080
+
