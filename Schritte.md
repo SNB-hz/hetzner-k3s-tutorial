@@ -1,4 +1,7 @@
 ## Hcloud Vorbereitung
+
+diese Schritte erfolgen im hcloud GUI: https://console.hetzner.cloud/
+
 - Account erstellen
 
 - account zum projekt hinzufügen lassen
@@ -31,9 +34,9 @@
 
 - internes Netzwerk erstellen
 
- `hcloud network create --name network-kubernetes --ip-range 10.0.0.0/16`
+  `hcloud network create --name network-kubernetes --ip-range 10.0.0.0/16`
  
- `hcloud network add-subnet network-kubernetes --network-zone eu-central --type server --ip-range 10.0.0.0/16`
+  `hcloud network add-subnet network-kubernetes --network-zone eu-central --type server --ip-range 10.0.0.0/16`
     
 - placement group erstellen
 
@@ -48,6 +51,7 @@
 - ersten server erstellen
 
   diese VM wird als "control-plane" dienen, mit der wir den k3s cluster verwalten
+  bei der Erstellung können ssh keys angegeben werden, die zur VM hinzugefügt werden sollen. Ein automatisches hinzufügen via hcloud ist zu einem späteren Zeitpunkt nicht möglich.
 
   `hcloud server create --type cx21 --name server-1 --image ubuntu-20.04 --ssh-key < key-name > --network network-kubernetes --placement-group group-spread`
  
@@ -59,7 +63,7 @@
 
 - per SSH auf den server verbinden
 
-  'ssh root@< server-1 public ip > -i < Speicherort ssh key > 
+  `ssh root@< server-1 public ip > -i < Speicherort ssh key >`
 
 - k3s auf server installieren
   
@@ -87,7 +91,7 @@
 
   `kubectl get pods -A`
 
---> einige pods stehen auf `Pending`, da wir den standard cloud-controller disabled haben, aber noch keinen Ersatz konfiguriert haben. Das machen wir jetzt:
+    --> einige pods stehen auf `Pending`, da wir den standard cloud-controller disabled haben, aber noch keinen Ersatz konfiguriert haben. Das machen wir jetzt:
 
 
 - hetzner cloud controller manager konfigurieren
@@ -104,7 +108,7 @@
 
 - pods nochmals prüfen
 
-  'kubectl get pods -A'
+  `kubectl get pods -A`
 
   --> nach kurzer Zeit sollten alle Pods im Zustand `Running` stehen
 
@@ -207,7 +211,7 @@ Entweder diese Schritte für jede Subdomain wiederholen, oder ein Wildcard Zerti
 
 - das Zertifikat prüfen und die Zertifikats-ID notieren
 
-  'hcloud certificate list'
+  `hcloud certificate list`
 
 ### finale Loadbalancer konfiguration
 
@@ -228,16 +232,16 @@ Zum testen des setups deployen wir eine einfache Hallo-Welt Anwendung.
 
 - Manifest herunteladen
 
-  'wget https://raw.githubusercontent.com/SNB-hz/hetzner-k3s-tutorial/main/manifests/hello-kubernetes/deployment.yaml'
+  `wget https://raw.githubusercontent.com/SNB-hz/hetzner-k3s-tutorial/main/manifests/hello-kubernetes/deployment.yaml`
 
 - im Manifest die domain ersetzen, für die das Zertifikat und DNS eingestellt wurde
 
 - das Manifest anwenden
 
-  'kubectl apply -f deployment.yaml'
+  `kubectl apply -f deployment.yaml`
 
 - pods prüfen
 
-  'kubectl get pods'
+  `kubectl get pods`
 
 - Test-domain aufrufen
